@@ -1,7 +1,7 @@
 
 int rapidjson_to_pxml(rapidjson::Value& json_value,PXmlNode& xml_node)
 {
-    //递归把rapidjson转成pxmlnode，json_value必须是Object
+    //json_value必须是Object
     if(!json_value.IsObject())
     {
         return -1;
@@ -19,13 +19,17 @@ int rapidjson_to_pxml(rapidjson::Value& json_value,PXmlNode& xml_node)
             rapidjson_to_pxml(child_value,child_xml_node);
             xml_node.AddChild(child_xml_node);
         }
-
         else if(child_value.IsArray())
         {
+            std::string xml_data = "<"+child_name+"></"+child_name+">";
+            PXmlDocument child_xml_document;
+            child_xml_document.Parse(xml_data,"gbk");
+            PXmlNode child_xml_node = child_xml_document.GetRoot();
             for(int i = 0;i<child_value.Size();i++)
             {
-                rapidjson_to_pxml(child_value[i],xml_node);
+                rapidjson_to_pxml(child_value[i],child_xml_node);
             }
+            xml_node.AddChild(child_xml_node);
         }
         else if(child_value.IsString())
         {
